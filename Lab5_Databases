@@ -1,0 +1,27 @@
+sosunok_32@MacBook-Air-Adinai ~ %  psql -U oa14021 -d postgres
+psql (18.6 (Homebrew))
+Type "help" for help.
+
+postgres=# CREATE DATABASE jama;
+CREATE DATABASE
+
+postgres=# \c jama;
+You are now connected to database "jama" as user "oa14021".
+
+jama=# SELECT current_database();
+ current_database 
+------------------
+ jama
+(1 row)
+
+jama=# \c postgres;
+You are now connected to database "postgres" as user "oa14021".
+
+postgres=# DROP DATABASE jama;
+DROP DATABASE
+
+postgres=# \c jama;
+connection to server on socket "/tmp/.s.PGSQL.5432" failed: FATAL:  database "jama" does not exist
+Previous connection kept
+
+postgres=# 
