@@ -1,0 +1,66 @@
+postgres=# SELECT * FROM students;
+ student_id |   name   |      email      | faculty 
+------------+----------+-----------------+---------
+          1 | Adinai   | oa14021@auca.kg | SFW
+          2 | Al-Timur | ka14010@auca.kg | ANTH
+          3 | Arslan   | ra13946@auca.kg | AMI
+          4 | Polina   | fp13942@auca.kg | ECO
+          5 | Lin      | tl14020@auca.kg | TCMA
+          6 | Bektur   | kb13940@auca.kg | BA
+          7 | Aziret   | ma14967@auca.kg | SFW
+(7 rows)
+
+postgres=# SELECT student_id, faculty FROM students;
+ student_id | faculty 
+------------+---------
+          1 | SFW
+          2 | ANTH
+          3 | AMI
+          4 | ECO
+          5 | TCMA
+          6 | BA
+          7 | SFW
+(7 rows)
+
+postgres=# SELECT name, email FROM students WHERE name = 'Al-Timur';
+   name   |      email      
+----------+-----------------
+ Al-Timur | ka14010@auca.kg
+(1 row)
+
+postgres=# SELECT name, email FROM students WHERE faculty = 'SFW';
+  name  |      email      
+--------+-----------------
+ Adinai | oa14021@auca.kg
+ Aziret | ma14967@auca.kg
+(2 rows)
+
+postgres=# SELECT name, email FROM students LIMIT 2;
+   name   |      email      
+----------+-----------------
+ Adinai   | oa14021@auca.kg
+ Al-Timur | ka14010@auca.kg
+(2 rows)
+
+postgres=# SELECT name, email FROM students LIMIT 4;
+   name   |      email      
+----------+-----------------
+ Adinai   | oa14021@auca.kg
+ Al-Timur | ka14010@auca.kg
+ Arslan   | ra13946@auca.kg
+ Polina   | fp13942@auca.kg
+(4 rows)
+
+postgres=# SELECT name, email FROM students ORDER BY faculty;
+   name   |      email      
+----------+-----------------
+ Arslan   | ra13946@auca.kg
+ Al-Timur | ka14010@auca.kg
+ Bektur   | kb13940@auca.kg
+ Polina   | fp13942@auca.kg
+ Adinai   | oa14021@auca.kg
+ Aziret   | ma14967@auca.kg
+ Lin      | tl14020@auca.kg
+(7 rows)
+
+postgres=# 
