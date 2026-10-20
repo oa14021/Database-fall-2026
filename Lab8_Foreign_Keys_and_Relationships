@@ -1,0 +1,273 @@
+postgres=# CREATE DATABASE lab8;
+CREATE DATABASE
+postgres=# \c lab8;
+You are now connected to database "lab8" as user "oa14021".
+lab8=# CREATE TABLE departments (
+lab8(# dept_id SERIAL PRIMARY KEY,
+lab8(# dept_name VARCHAR(100) NOT NULL,
+lab8(# location VARCHAR(100)
+lab8(# );
+CREATE TABLE
+lab8=# CREATE TABLE employees (
+lab8(# emp_id SERIAL PRIMARY KEY,
+lab8(# first_name VARCHAR(50) NOT NULL,
+lab8(# last_name VARCHAR(50) NOT NULL,
+lab8(# dept_id INTEGER REFERENCES departments(dept_id)
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO departments (dept_name, location) VALUES
+lab8-# ('SFW', '324'), ('AMI', '415'), ('LAS', '310'), ('TCMA', '415');
+INSERT 0 4
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Frolova', 'Polina', 2);
+lab8-# ('Turdalieva', 'Lin', 4);
+INSERT 0 2
+lab8=# SELECT * FROM departments;
+ dept_id | dept_name | location 
+---------+-----------+----------
+       1 | SFW       | 324
+       2 | AMI       | 415
+       3 | LAS       | 310
+       4 | TCMA      | 415
+(4 rows)
+
+lab8=# SELECT * FROM employees;
+ emp_id | first_name | last_name | dept_id 
+--------+------------+-----------+---------
+      1 | Frolova    | Polina    |       2
+      2 | Turdalieva | Lin       |       4
+(2 rows)
+
+lab8=# DROP TABLE employees;
+DROP TABLE
+lab8=# CREATE TABLE employees (
+lab8(# emp_id SERIAL PRIMARY KEY,
+lab8(# first_name VARCHAR(50) NOT NULL,
+lab8(# last_name VARCHAR(50) NOT NULL,
+lab8(# dept_id INTEGER,
+lab8(# FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Frolova', 'Polina', 2);
+INSERT 0 1
+                                 ^
+lab8=# SELECT * FROM employees;
+ emp_id | first_name | last_name | dept_id 
+--------+------------+-----------+---------
+      1 | Frolova    | Polina    |       2
+(1 row)
+
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Zhumabekov', 'Aziret', 6);
+ERROR:  insert or update on table "employees" violates foreign key constraint "employees_dept_id_fkey"
+DETAIL:  Key (dept_id)=(6) is not present in table "departments".
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Zhumabekov', 'Aziret', 4);
+INSERT 0 1
+lab8=# SELECT * FROM employees;
+ emp_id | first_name | last_name | dept_id 
+--------+------------+-----------+---------
+      1 | Frolova    | Polina    |       2
+      3 | Zhumabekov | Aziret    |       4
+(2 rows)
+
+lab8=# DROP TABLE IF EXISTS employees;
+DROP TABLE
+lab8=# CREATE TABLE employees (
+lab8(# emp_id SERIAL PRIMARY KEY,
+lab8(# first_name VARCHAR(50) NOT NULL,
+lab8(# last_name VARCHAR(50) NOT NULL,
+lab8(# dept_id INTEGER
+lab8(# );
+CREATE TABLE
+lab8=# ALTER TABLE employees
+lab8-# ADD CONSTRAINT fk_employee_department
+lab8-# FOREIGN KEY (dept_id) REFERENCES departments(dept_id);
+ALTER TABLE
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Ruslanov', 'Arslan', 1);
+INSERT 0 1
+lab8=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+lab8-# ('Zhumabekov', 'Aziret', 67);
+ERROR:  insert or update on table "employees" violates foreign key constraint "fk_employee_department"
+DETAIL:  Key (dept_id)=(67) is not present in table "departments".
+lab8=# SELECT * FROM employees;
+ emp_id | first_name | last_name | dept_id 
+--------+------------+-----------+---------
+      1 | Ruslanov   | Arslan    |       1
+(1 row)
+
+lab8=# DROP TABLE employees;
+DROP TABLE
+lab8=# DROP TABLE departments;
+DROP TABLE
+lab8=# CREATE TABLE students (
+lab8(# student_id SERIAL PRIMARY KEY,
+lab8(# first_name VARCHAR(50) NOT NULL,
+lab8(# last_name VARCHAR(50) NOT NULL,
+lab8(# email VARCHAR(100) UNIQUE,
+lab8(# enrollment_date DATE DEFAULT CURRENT_DATE
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO students (first_name, last_name, email) VALUES
+lab8-# ('Polina', 'Frolova', 'fp13942@auca.kg'),
+lab8-# ('Aziret', 'Zhumabekov', 'za13967@auca.kg');
+INSERT 0 2
+lab8=# SELECT * FROM students;
+ student_id | first_name | last_name  |      email      | enrollment_date 
+------------+------------+------------+-----------------+-----------------
+          1 | Polina     | Frolova    | fp13942@auca.kg | 2026-10-20
+          2 | Aziret     | Zhumabekov | za13967@auca.kg | 2026-10-20
+(2 rows)
+
+lab8=# CREATE TABLE student_profiles (
+lab8(# profile_id SERIAL PRIMARY KEY,
+lab8(# student_id INTEGER UNIQUE NOT NULL,
+lab8(# bio TEXT,
+lab8(# FOREIGN KEY (student_id) REFERENCES students(student_id)
+lab8(# ON DELETE CASCADE
+lab8(# ON UPDATE CASCADE
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO student_profiles (student_id, bio) VALUES
+lab8-# (1, 'Software Engineering Student'),
+lab8-# (2, 'Applied Mathematics Student');
+INSERT 0 2
+lab8=# SELECT * FROM student_profiles;
+ profile_id | student_id |             bio             
+------------+------------+-----------------------------
+          1 |          1 | Software Engineering Student
+          2 |          2 | Applied Mathematics Student
+(2 rows)
+
+lab8=# CREATE TABLE user_profiles (
+lab8(# profile_id SERIAL PRIMARY KEY,
+lab8(# student_id INTEGER UNIQUE NOT NULL,
+lab8(# first_name VARCHAR(50),
+lab8(# last_name VARCHAR(50),
+lab8(# bio TEXT,
+lab8(# FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO user_profiles (student_id, first_name, last_name, bio) VALUES
+lab8-# (1, 'Polina', 'Frolova', 'Loves Programming'),
+lab8-# (2, 'Aziret', 'Zhumabekov', 'Passionate about math');
+INSERT 0 2
+lab8=# SELECT * FROM user_profiles;
+ profile_id | student_id | first_name | last_name  |          bio          
+------------+------------+------------+------------+-----------------------
+          1 |          1 | Polina     | Frolova    | Loves Programming
+          2 |          2 | Aziret     | Zhumabekov | Passionate about math
+(2 rows)
+
+lab8=# CREATE TABLE blog_posts (
+lab8(# post_id SERIAL PRIMARY KEY,
+lab8(# title VARCHAR(200) NOT NULL,
+lab8(# content TEXT,
+lab8(# author VARCHAR(100)
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO blog_posts (title, content, author) VALUES
+lab8-# ('History of Islam in Central Asia', 'How Islam came to Central Asia', 'Arslan Ruslanov');
+INSERT 0 1
+lab8=# CREATE TABLE comments (
+lab8(# comment_id SERIAL PRIMARY KEY,
+lab8(# post_id INTEGER NOT NULL,
+lab8(# commenter_name VARCHAR(100),
+lab8(# comment_text TEXT NOT NULL,
+lab8(# FOREIGN KEY (post_id) REFERENCES blog_posts(post_id) ON DELETE CASCADE
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO comments (post_id, commenter_name, comment_text) VALUES 
+(1, 'Polina Frolova', 'Great presentation.'),
+(1, 'Aziret Zhumabekov', 'Very clear examples.');
+INSERT 0 2
+lab8=# SELECT * FROM blog_posts;
+ post_id |              title               |            content             |     author      
+---------+----------------------------------+--------------------------------+-----------------
+       1 | History of Islam in Central Asia | How Islam came to Central Asia | Arslan Ruslanov
+(1 row)
+
+lab8=# SELECT * FROM comments;
+ comment_id | post_id |  commenter_name   |     comment_text     
+------------+---------+-------------------+----------------------
+          1 |       1 | Polina Frolova    | Great presentation.
+          2 |       1 | Aziret Zhumabekov | Very clear examples.
+(2 rows)
+
+lab8=# CREATE TABLE courses (
+lab8(# course_id SERIAL PRIMARY KEY,
+lab8(# course_code VARCHAR(10) UNIQUE NOT NULL,
+lab8(# course_name VARCHAR(100) NOT NULL,
+lab8(# credits INTEGER NOT NULL,
+lab8(# instructor VARCHAR(100)
+lab8(# );
+CREATE TABLE
+lab8=# CREATE TABLE student_enrollments (
+lab8(# enrollment_id SERIAL PRIMARY KEY,
+lab8(# student_id INTEGER NOT NULL,
+lab8(# course_id INTEGER NOT NULL,
+lab8(# enrollment_date DATE DEFAULT CURRENT_DATE,
+lab8(# grade CHAR(2),
+lab8(# FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
+lab8(# FOREIGN KEY (course_id) REFERENCES courses(course_id) ON DELETE CASCADE,
+lab8(# UNIQUE(student_id, course_id)
+lab8(# );
+CREATE TABLE
+lab8=# INSERT INTO courses (course_code, course_name, credits, instructor) VALUES
+lab8-# ('CS101', 'Introduction to Programming', 3, 'Dr. Brown'),
+lab8-# ('CS201', 'Data Structures', 4, 'Dr. Davis'),
+lab8-# ('MATH101', 'Calculus I', 4, 'Dr. Wilson');
+INSERT 0 3
+lab8=#  INSERT INTO student_enrollments (student_id, course_id, grade) VALUES
+lab8-# (1, 1, 'B+'),  -- Polina in CS101
+lab8-# (1, 3, 'A'),   -- Polina in MATH101
+lab8-# (2, 2, 'A'),   -- Aziret in CS201
+lab8-# (2, 3, 'A-');  -- Aziret in MATH101
+INSERT 0 4
+lab8=# SELECT
+lab8-# s.first_name || ' ' || s.last_name AS student_name,
+lab8-# c.course_code,
+lab8-# c.course_name,
+lab8-# se.grade,
+lab8-# se.enrollment_date
+lab8-# FROM students s
+lab8-# JOIN student_enrollments se ON s.student_id = se.student_id
+lab8-# JOIN courses c ON se.course_id = c.course_id
+lab8-# ORDER BY s.last_name, c.course_code;
+   student_name    | course_code |         course_name         | grade | enrollment_date 
+-------------------+-------------+-----------------------------+-------+-----------------
+ Polina Frolova    | CS101       | Introduction to Programming | B+    | 2026-10-20
+ Polina Frolova    | MATH101     | Calculus I                  | A     | 2026-10-20
+ Aziret Zhumabekov | CS201       | Data Structures             | A     | 2026-10-20
+ Aziret Zhumabekov | MATH101     | Calculus I                  | A-    | 2026-10-20
+(4 rows)
+
+lab8=# SELECT s.first_name, s.last_name, se.grade
+lab8-# FROM students s
+lab8-# JOIN student_enrollments se ON s.student_id = se.student_id
+lab8-# JOIN courses c ON se.course_id = c.course_id
+lab8-# WHERE c.course_code = 'CS101';
+ first_name | last_name | grade 
+------------+-----------+-------
+ Polina     | Frolova   | B+
+(1 row)
+
+lab8=# SELECT c.course_code, c.course_name, c.credits, se.grade
+lab8-# FROM courses c
+lab8-# JOIN student_enrollments se ON c.course_id = se.course_id
+lab8-# JOIN students s ON se.student_id = s.student_id
+lab8-# WHERE s.email = 'fp13942@auca.kg';
+ course_code |         course_name         | credits | grade 
+-------------+-----------------------------+---------+-------
+ CS101       | Introduction to Programming |       3 | B+
+ MATH101     | Calculus I                  |       4 | A 
+(2 rows)
+
+lab8=# SELECT * FROM students;
+ student_id | first_name | last_name  |      email      | enrollment_date 
+------------+------------+------------+-----------------+-----------------
+          1 | Polina     | Frolova    | fp13942@auca.kg | 2026-10-20
+          2 | Aziret     | Zhumabekov | za13967@auca.kg | 2026-10-20
+(2 rows)
