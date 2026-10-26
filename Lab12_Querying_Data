@@ -1,0 +1,200 @@
+postgres=# SELECT * FROM authors;
+ author_id | first_name |   last_name    | birth_date 
+-----------+------------+----------------+------------
+         1 | Mary       | Shelley        | 1797-08-30
+         2 | Fyodor     | Dostoevsky     | 1821-11-11
+         3 | George     | Orwell         | 1903-06-25
+         4 | Jane       | Austen         | 1775-12-16
+         5 | Ray        | Bradbury       | 1920-08-22
+         6 | Gabriel    | Garcia Marquez | 1927-03-06
+         7 | Agatha     | Christie       | 1890-09-15
+         8 | Hermann    | Hesse          | 1877-07-02
+         9 | Chinghiz   | Aitmatov       | 1928-12-12
+(9 rows)
+
+postgres=# SELECT * FROM books;
+ book_id |             title             |     isbn      | publication_year | available_copies 
+---------+-------------------------------+---------------+------------------+------------------
+       1 | Frankenstein                  | 9780141439471 |             1818 |                3
+       2 | Idiot                         | 9780140447927 |             1869 |                3
+       3 | 1984                          | 9780451524935 |             1949 |                2
+       4 | Pride and Prejudice           | 9780141439518 |             1813 |                4
+       5 | Fahrenheit 451                | 9781451673319 |             1953 |                5
+       6 | One Hundred Years of Solitude | 9780060883287 |             1967 |                3
+       7 | Murder on the Orient Express  | 9780063375833 |             1934 |                7
+       8 | Demian                        | 9780143106784 |             1919 |                3
+       9 | When the Mountains Fall       | 9785389134355 |             2006 |                2
+(9 rows)
+
+postgres=# SELECT title, publication_year, available_copies FROM books;
+             title             | publication_year | available_copies 
+-------------------------------+------------------+------------------
+ Frankenstein                  |             1818 |                3
+ Idiot                         |             1869 |                3
+ 1984                          |             1949 |                2
+ Pride and Prejudice           |             1813 |                4
+ Fahrenheit 451                |             1953 |                5
+ One Hundred Years of Solitude |             1967 |                3
+ Murder on the Orient Express  |             1934 |                7
+ Demian                        |             1919 |                3
+ When the Mountains Fall       |             2006 |                2
+(9 rows)
+
+postgres=# SELECT product_name, price, price * 0.80 AS discounted_price 
+FROM products;
+ product_name |  price  | discounted_price 
+--------------+---------+------------------
+ Laptop       | 1200.00 |         960.0000
+ Mouse        |   25.50 |          20.4000
+(2 rows)
+
+postgres=# INSERT INTO products (product_name, price) VALUES 
+postgres-# ('Headphones', 29.99),
+postgres-# ('Leather Wallet', 22.00),
+postgres-# ('Notebook', 4.50),
+postgres-# ('Sunglesses', 12.00),
+postgres-# ('Backpak', 34.99);
+INSERT 0 5
+postgres=# SELECT * FROM products;
+ product_id |  product_name  |  price  
+------------+----------------+---------
+          1 | Laptop         | 1200.00
+          2 | Mouse          |   25.50
+          3 | Headphones     |   29.99
+          4 | Leather Wallet |   22.00
+          5 | Notebook       |    4.50
+          6 | Sunglesses     |   12.00
+          7 | Backpak        |   34.99
+(7 rows)
+
+postgres=# SELECT product_name, price, price * 0.80 AS discounted_price
+postgres-# FROM products;
+  product_name  |  price  | discounted_price 
+----------------+---------+------------------
+ Laptop         | 1200.00 |         960.0000
+ Mouse          |   25.50 |          20.4000
+ Headphones     |   29.99 |          23.9920
+ Leather Wallet |   22.00 |          17.6000
+ Notebook       |    4.50 |           3.6000
+ Sunglesses     |   12.00 |           9.6000
+ Backpak        |   34.99 |          27.9920
+(7 rows)
+
+postgres=# SELECT title, publication_year
+postgres-# FROM books
+postgres-# WHERE publication_year > 1900;
+             title             | publication_year 
+-------------------------------+------------------
+ 1984                          |             1949
+ Fahrenheit 451                |             1953
+ One Hundred Years of Solitude |             1967
+ Murder on the Orient Express  |             1934
+ Demian                        |             1919
+ When the Mountains Fall       |             2006
+(6 rows)
+
+postgres=# SELECT title, publication_year
+postgres-# FROM books
+postgres-#  WHERE publication_year < 1900;
+        title        | publication_year 
+---------------------+------------------
+ Frankenstein        |             1818
+ Idiot               |             1869
+ Pride and Prejudice |             1813
+(3 rows)
+
+postgres=# SELECT product_name, price
+postgres-# FROM products
+postgres-# WHERE price BETWEEN 20.00 AND 500.00;
+  product_name  | price 
+----------------+-------
+ Mouse          | 25.50
+ Headphones     | 29.99
+ Leather Wallet | 22.00
+ Backpak        | 34.99
+(4 rows)
+
+postgres=# SELECT first_name, last_name
+postgres-# FROM authors
+postgres-# WHERE first_name LIKE 'M%';
+ first_name | last_name 
+------------+-----------
+ Mary       | Shelley
+(1 row)
+
+postgres=# SELECT first_name, last_name
+postgres-# FROM authors
+postgres-# WHERE first_name ~ '^[GAC]';
+ first_name |   last_name    
+------------+----------------
+ George     | Orwell
+ Gabriel    | Garcia Marquez
+ Agatha     | Christie
+ Chinghiz   | Aitmatov
+(4 rows)
+
+postgres=# SELECT title, publication_year
+postgres-# FROM books
+postgres-# WHERE book_id IN (
+postgres(# SELECT book_id
+postgres(# FROM book_authors
+postgres(# WHERE author_id = 8
+postgres(# );
+ title  | publication_year 
+--------+------------------
+ Demian |             1919
+(1 row)
+
+postgres=# SELECT first_name, last_name
+postgres-# FROM authors a
+postgres-# WHERE EXISTS (
+postgres(# SELECT 1
+postgres(# FROM book_authors ba
+postgres(# WHERE ba.author_id = a.author_id
+postgres(# );
+ first_name |   last_name    
+------------+----------------
+ Mary       | Shelley
+ Fyodor     | Dostoevsky
+ George     | Orwell
+ Jane       | Austen
+ Ray        | Bradbury
+ Gabriel    | Garcia Marquez
+ Agatha     | Christie
+ Hermann    | Hesse
+ Chinghiz   | Aitmatov
+(9 rows)
+
+postgres=# SELECT title, available_copies,
+postgres-# CASE
+postgres-# WHEN available_copies > 5 THEN 'Plenty in stock'
+postgres-# WHEN available_copies BETWEEN 3 AND 5 THEN 'Limited stock'
+postgres-# ELSE 'Out of stock'
+postgres-# END AS stock_status
+postgres-# FROM books;
+             title             | available_copies |  stock_status   
+-------------------------------+------------------+-----------------
+ Frankenstein                  |                3 | Limited stock
+ Idiot                         |                3 | Limited stock
+ 1984                          |                2 | Out of stock
+ Pride and Prejudice           |                4 | Limited stock
+ Fahrenheit 451                |                5 | Limited stock
+ One Hundred Years of Solitude |                3 | Limited stock
+ Murder on the Orient Express  |                7 | Plenty in stock
+ Demian                        |                3 | Limited stock
+ When the Mountains Fall       |                2 | Out of stock
+(9 rows)
+
+postgres=# WITH average_stock AS (
+postgres(# SELECT AVG(available_copies) AS avg_copies
+postgres(# FROM books
+postgres(# )
+postgres-# SELECT b.title, b.available_copies, a.avg_copies
+postgres-# FROM books b, average_stock a
+postgres-# WHERE b.available_copies > a.avg_copies;
+            title             | available_copies |     avg_copies     
+------------------------------+------------------+--------------------
+ Pride and Prejudice          |                4 | 3.5555555555555556
+ Fahrenheit 451               |                5 | 3.5555555555555556
+ Murder on the Orient Express |                7 | 3.5555555555555556
+(3 rows)
