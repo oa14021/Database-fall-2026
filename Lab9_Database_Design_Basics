@@ -1,0 +1,212 @@
+postgres=# DROP DATABASE IF EXISTS lab9;
+NOTICE:  database "lab9" does not exist, skipping
+DROP DATABASE
+postgres=# CREATE DATABASE lab9;
+CREATE DATABASE
+postgres=# \c lab9;
+You are now connected to database "lab9" as user "oa14021".
+lab9=# CREATE TABLE departments (
+lab9(# department_id INT PRIMARY KEY,
+lab9(# department_name VARCHAR(100),
+lab9(# department_head VARCHAR(100)
+lab9(# );
+CREATE TABLE
+lab9=# CREATE TABLE students (
+lab9(# student_id INT PRIMARY KEY,
+lab9(# name VARCHAR(100) NOT NULL,
+lab9(# department_id INT,
+lab9(# FOREIGN KEY (department_id) REFERENCES departments(department_id)
+lab9(# );
+CREATE TABLE
+lab9=# INSERT INTO departments VALUES
+lab9-# (1, 'Software Engineering', 'Almaz Bakenov'),
+lab9-# (2, 'Applied Mathematics', 'Sergei Nikolaevich Sklyar');
+INSERT 0 2
+lab9=# SELECT * FROM departments;
+ department_id |   department_name    |      department_head      
+---------------+----------------------+---------------------------
+             1 | Software Engineering | Almaz Bakenov
+             2 | Applied Mathematics  | Sergei Nikolaevich Sklyar
+(2 rows)
+
+lab9=# INSERT INTO students VALUES
+lab9-# (14021, 'Adinai Osmonova', 1),
+lab9-# (13942, 'Polina Frolova', 2),
+lab9-# (13967, 'Aziret Zhumabekov', 1);
+INSERT 0 3
+lab9=# SELECT * FROM students;
+ student_id |       name        | department_id 
+------------+-------------------+---------------
+      14021 | Adinai Osmonova   |             1
+      13942 | Polina Frolova    |             2
+      13967 | Aziret Zhumabekov |             1
+(3 rows)
+
+lab9=# CREATE TABLE student_phones (
+lab9(# student_id INT,
+lab9(# phone_number VARCHAR(15),
+lab9(# phone_type VARCHAR(20),
+lab9(# PRIMARY KEY (student_id, phone_number),
+lab9(# FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE
+lab9(# );
+CREATE TABLE
+lab9=# INSERT INTO student_phones VALUES
+lab9-# (14021, '+996999777555', 'mobile'),
+lab9-# (13942, '+996701345647', 'mobile'),
+lab9-# (13967, '+996767676767', 'mobile');
+INSERT 0 3
+lab9=# SELECT * FROM student_phones;
+ student_id | phone_number  | phone_type 
+------------+---------------+------------
+      14021 | +996999777555 | mobile
+      13942 | +996701345647 | mobile
+      13967 | +996767676767 | mobile
+(3 rows)
+
+lab9=# CREATE TABLE courses (
+lab9(# course_id INT PRIMARY KEY,
+lab9(# course_name VARCHAR(100),
+lab9(# credits INT
+lab9(# );
+CREATE TABLE
+lab9=# INSERT INTO courses VALUES
+lab9-# (213, 'Database', 6),
+lab9-# (208.1, 'History of Kyrgyzstan', 4),
+lab9-# (101.1, 'Russian Language I', 2);
+INSERT 0 3
+lab9=# SELECT * FROM courses;
+ course_id |      course_name      | credits 
+-----------+-----------------------+---------
+       213 | Database              |       6
+       208 | History of Kyrgyzstan |       4
+       101 | Russian Language I    |       2
+(3 rows)
+
+lab9=# CREATE TABLE enrollments (
+lab9(# student_id INT,
+lab9(# course_id INT,
+lab9(# grade CHAR(2),
+lab9(# PRIMARY KEY (student_id, course_id),
+lab9(# FOREIGN KEY (student_id) REFERENCES students(student_id),
+lab9(# FOREIGN KEY (course_id) REFERENCES courses(course_id)
+lab9(# );
+CREATE TABLE
+lab9=# INSERT INTO enrollments VALUES
+lab9-# (14021, 101, 'A-'), 
+lab9-# (14021, 213, 'A'),
+lab9-# (13942, 208, 'B'),
+lab9-# (13942, 101, 'B+'), 
+lab9-# (13967, 208, 'B-');
+INSERT 0 5
+lab9=# SELECT * FROM enrollments;
+ student_id | course_id | grade 
+------------+-----------+-------
+      14021 |       101 | A-
+      14021 |       213 | A 
+      13942 |       208 | B 
+      13942 |       101 | B+
+      13967 |       208 | B-
+(5 rows)
+
+lab9=# CREATE TABLE authors (
+lab9(# author_id SERIAL PRIMARY KEY,
+lab9(# first_name VARCHAR(50) NOT NULL,
+lab9(# last_name VARCHAR(50) NOT NULL,
+lab9(# birth_date DATE
+lab9(# );
+CREATE TABLE
+lab9=# CREATE TABLE books (
+lab9(# book_id SERIAL PRIMARY KEY,
+lab9(# title VARCHAR(200) NOT NULL,
+lab9(# isbn VARCHAR(13) UNIQUE,
+lab9(# publication_year INTEGER,
+lab9(# available_copies INTEGER DEFAULT 1
+lab9(# );
+CREATE TABLE
+lab9=# CREATE TABLE book_authors (
+lab9(# book_id INTEGER,
+lab9(# author_id INTEGER,
+lab9(# PRIMARY KEY (book_id, author_id),
+lab9(# FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
+lab9(# FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE CASCADE
+lab9(# );
+CREATE TABLE
+lab9=# CREATE TABLE members (
+lab9(# member_id SERIAL PRIMARY KEY,
+lab9(# first_name VARCHAR(50) NOT NULL,
+lab9(# last_name VARCHAR(50) NOT NULL,
+lab9(# email VARCHAR(100) UNIQUE NOT NULL,
+lab9(# phone VARCHAR(15),
+lab9(# membership_date DATE DEFAULT CURRENT_DATE
+lab9(# );
+CREATE TABLE
+lab9=# CREATE TABLE loans (
+lab9(# loan_id SERIAL PRIMARY KEY,
+lab9(# member_id INTEGER NOT NULL,
+lab9(# book_id INTEGER NOT NULL,
+lab9(# loan_date DATE DEFAULT CURRENT_DATE,
+lab9(# due_date DATE NOT NULL,
+lab9(# return_date DATE,
+lab9(# late_fee DECIMAL(10,2) DEFAULT 0.00,
+lab9(# FOREIGN KEY (member_id) REFERENCES members(member_id),
+lab9(# 
+lab9(# FOREIGN KEY (book_id) REFERENCES books(book_id)
+lab9(# );
+CREATE TABLE
+lab9=# INSERT INTO authors (first_name, last_name, birth_date) VALUES
+lab9-# ('Mary', 'Shelley', '1797-08-30'),
+lab9-# ('Fyodor', 'Dostoevsky', '1821-11-11'),
+lab9-# ('George', 'Orwell', '1903-06-25');
+INSERT 0 3
+lab9=# SELECT * FROM authors;
+ author_id | first_name | last_name  | birth_date 
+-----------+------------+------------+------------
+         1 | Mary       | Shelley    | 1797-08-30
+         2 | Fyodor     | Dostoevsky | 1821-11-11
+         3 | George     | Orwell     | 1903-06-25
+(3 rows)
+
+lab9=# INSERT INTO books (title, isbn, publication_year, available_copies) VALUES
+lab9-# ('Frankenstein', '9780141439471', 1818, 3),
+lab9-# ('Idiot', '9780140447927', 1869, 3),
+lab9-# ('1984', '9780451524935', 1949, 2);
+INSERT 0 3
+lab9=# SELECT * FROM books;
+ book_id |    title     |     isbn      | publication_year | available_copies 
+---------+--------------+---------------+------------------+------------------
+       1 | Frankenstein | 9780141439471 |             1818 |                3
+       2 | Idiot        | 9780140447927 |             1869 |                3
+       3 | 1984         | 9780451524935 |             1949 |                2
+(3 rows)
+
+lab9=# INSERT INTO book_authors (book_id, author_id) VALUES (1, 1), (2, 2), (3, 3);
+INSERT 0 3
+lab9=# SELECT * FROM book_authors;
+ book_id | author_id 
+---------+-----------
+       1 |         1
+       2 |         2
+       3 |         3
+(3 rows)
+
+lab9=# INSERT INTO members (first_name, last_name, email, phone) VALUES
+lab9-# ('Aziret', 'Zhumabekov', 'za13967.lib@auca.kg', '+996767676767'),
+lab9-# ('Polina', 'Frolova', 'fp13942.lib@auca.kg', '+996701345647');
+INSERT 0 2
+lab9=# SELECT * FROM members;
+ member_id | first_name | last_name  |        email        |     phone     | membership_date 
+-----------+------------+------------+---------------------+---------------+-----------------
+         1 | Aziret     | Zhumabekov | za13967.lib@auca.kg | +996767676767 | 2026-10-26
+         2 | Polina     | Frolova    | fp13942.lib@auca.kg | +996701345647 | 2026-10-26
+(2 rows)
+
+lab9=# INSERT INTO loans (member_id, book_id, due_date) VALUES
+lab9-# (1, 1, '2026-11-10'),
+lab9-# (2, 2, '2026-11-15');
+INSERT 0 2
+lab9=# SELECT * FROM loans;
+ loan_id | member_id | book_id | loan_date  |  due_date  | return_date | late_fee 
+---------+-----------+---------+------------+------------+-------------+----------
+       1 |         1 |       1 | 2026-10-26 | 2026-11-10 |             |     0.00
+       2 |         2 |       2 | 2026-10-26 | 2026-11-15 |             |     0.00
+(2 rows)
