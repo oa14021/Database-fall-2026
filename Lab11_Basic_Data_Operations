@@ -1,0 +1,152 @@
+postgres=# \d university_students
+                                      Table "public.university_students"
+    Column     |          Type          | Collation | Nullable |                   Default                    
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null | 
+ last_name     | character varying(50)  |           | not null | 
+ email_address | character varying(100) |           | not null | 
+ date_of_birth | date                   |           |          | 
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email_address)
+    "unique_student_email" UNIQUE CONSTRAINT, btree (email_address)
+
+postgres=# SELECT * FROM university_students
+postgres-# ;
+ student_id | first_name | last_name  |  email_address  | date_of_birth 
+------------+------------+------------+-----------------+---------------
+          1 | Adinai     | Osmonova   | oa14021@auca.kg | 2008-03-11
+          2 | Polina     | Frolova    | fp13942@auca.kg | 2007-03-19
+          3 | Aziret     | Zhumabekov | za13967@auca.kg | 2006-06-24
+(3 rows)
+
+postgres=# ALTER TABLE university_students
+postgres-# ADD phone_number VARCHAR(20);
+ALTER TABLE
+postgres=# INSERT INTO university_students (first_name, last_name, email_address, date_of_birth, phone_number) VALUES
+postgres-# ('Lin', 'Turdalieva', 'tl14020@auca.kg', '2007-06-23', '+996775135790');
+INSERT 0 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name | last_name  |  email_address  | date_of_birth | phone_number  
+------------+------------+------------+-----------------+---------------+---------------
+          1 | Adinai     | Osmonova   | oa14021@auca.kg | 2008-03-11    | 
+          2 | Polina     | Frolova    | fp13942@auca.kg | 2007-03-19    | 
+          3 | Aziret     | Zhumabekov | za13967@auca.kg | 2006-06-24    | 
+          4 | Lin        | Turdalieva | tl14020@auca.kg | 2007-06-23    | +996775135790
+(4 rows)
+
+postgres=# INSERT INTO university_students (first_name, last_name, email_address, date_of_birth, phone_number) VALUES
+postgres-# ('Aizirek', 'Osmonova', 'oa14019@auca.kg', '2009-10-24', '+996770987654'),
+postgres-# ('Arslan', 'Ruslanov', '13096@auca.kg', '2007-05-07', '+996999333111'),
+postgres-# ('Bektur', 'Kushtarbekov', 'kb14023@auca.kg', '2004-10-26', '+996555123456');
+INSERT 0 3
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |  email_address  | date_of_birth | phone_number  
+------------+------------+--------------+-----------------+---------------+---------------
+          1 | Adinai     | Osmonova     | oa14021@auca.kg | 2008-03-11    | 
+          2 | Polina     | Frolova      | fp13942@auca.kg | 2007-03-19    | 
+          3 | Aziret     | Zhumabekov   | za13967@auca.kg | 2006-06-24    | 
+          4 | Lin        | Turdalieva   | tl14020@auca.kg | 2007-06-23    | +996775135790
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg | 2009-10-24    | +996770987654
+          6 | Arslan     | Ruslanov     | 13096@auca.kg   | 2007-05-07    | +996999333111
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg | 2004-10-26    | +996555123456
+(7 rows)
+
+postgres=# UPDATE university_students
+postgres-# SET phone_number = '+996504165030'
+postgres-#  WHERE first_name = 'Adinai' AND  last_name = 'Osmonova';
+UPDATE 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |  email_address  | date_of_birth | phone_number  
+------------+------------+--------------+-----------------+---------------+---------------
+          2 | Polina     | Frolova      | fp13942@auca.kg | 2007-03-19    | 
+          3 | Aziret     | Zhumabekov   | za13967@auca.kg | 2006-06-24    | 
+          4 | Lin        | Turdalieva   | tl14020@auca.kg | 2007-06-23    | +996775135790
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg | 2009-10-24    | +996770987654
+          6 | Arslan     | Ruslanov     | 13096@auca.kg   | 2007-05-07    | +996999333111
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg | 2004-10-26    | +996555123456
+          1 | Adinai     | Osmonova     | oa14021@auca.kg | 2008-03-11    | +996504165030
+(7 rows)
+
+postgres=#  UPDATE university_students
+postgres-# SET phone_number = '+996502305016'
+postgres-# WHERE first_name = 'Aizirek' AND last_name = 'Osmonova';
+UPDATE 1
+postgres=#  UPDATE university_students
+postgres-# SET phone_number = '+996701345647'
+postgres-# WHERE first_name = 'Polina' AND last_name = 'Frolova';
+UPDATE 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |  email_address  | date_of_birth | phone_number  
+------------+------------+--------------+-----------------+---------------+---------------
+          3 | Aziret     | Zhumabekov   | za13967@auca.kg | 2006-06-24    | 
+          4 | Lin        | Turdalieva   | tl14020@auca.kg | 2007-06-23    | +996775135790
+          6 | Arslan     | Ruslanov     | 13096@auca.kg   | 2007-05-07    | +996999333111
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg | 2004-10-26    | +996555123456
+          1 | Adinai     | Osmonova     | oa14021@auca.kg | 2008-03-11    | +996504165030
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg | 2009-10-24    | +996502305016
+          2 | Polina     | Frolova      | fp13942@auca.kg | 2007-03-19    | +996701345647
+(7 rows)
+
+postgres=# UPDATE university_students
+postgres-# SET date_of_birth = '2006-12-03'
+postgres-# WHERE first_name = 'Adinai' AND last_name = 'Osmonova';
+UPDATE 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |  email_address  | date_of_birth | phone_number  
+------------+------------+--------------+-----------------+---------------+---------------
+          3 | Aziret     | Zhumabekov   | za13967@auca.kg | 2006-06-24    | 
+          4 | Lin        | Turdalieva   | tl14020@auca.kg | 2007-06-23    | +996775135790
+          6 | Arslan     | Ruslanov     | 13096@auca.kg   | 2007-05-07    | +996999333111
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg | 2004-10-26    | +996555123456
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg | 2009-10-24    | +996502305016
+          2 | Polina     | Frolova      | fp13942@auca.kg | 2007-03-19    | +996701345647
+          1 | Adinai     | Osmonova     | oa14021@auca.kg | 2006-12-03    | +996504165030
+(7 rows)
+
+postgres=# UPDATE university_students
+postgres-# SET last_name = 'Bekov', 
+postgres-# email_address = 'azazaza@gmail.com'
+postgres-# WHERE first_name = 'Aziret' AND last_name = 'Zhumabekov';
+UPDATE 1
+postgres=# UPDATE university_students
+postgres-# SET last_name = 'Tsukishima',
+postgres-# email_address = 'aikwzvs@gmail.com'
+postgres-# WHERE first_name = 'Adinai' AND last_name = 'Osmonova';
+UPDATE 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |   email_address   | date_of_birth | phone_number  
+------------+------------+--------------+-------------------+---------------+---------------
+          4 | Lin        | Turdalieva   | tl14020@auca.kg   | 2007-06-23    | +996775135790
+          6 | Arslan     | Ruslanov     | 13096@auca.kg     | 2007-05-07    | +996999333111
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg   | 2004-10-26    | +996555123456
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg   | 2009-10-24    | +996502305016
+          2 | Polina     | Frolova      | fp13942@auca.kg   | 2007-03-19    | +996701345647
+          3 | Aziret     | Bekov        | azazaza@gmail.com | 2006-06-24    | 
+          1 | Adinai     | Tsukishima   | aikwzvs@gmail.com | 2006-12-03    | +996504165030
+(7 rows)
+
+postgres=# DELETE FROM university_students
+postgres-# WHERE first_name = 'Arslan' AND last_name = 'Ruslanov';
+DELETE 1
+postgres=# SELECT * FROM university_students;
+ student_id | first_name |  last_name   |   email_address   | date_of_birth | phone_number  
+------------+------------+--------------+-------------------+---------------+---------------
+          4 | Lin        | Turdalieva   | tl14020@auca.kg   | 2007-06-23    | +996775135790
+          7 | Bektur     | Kushtarbekov | kb14023@auca.kg   | 2004-10-26    | +996555123456
+          5 | Aizirek    | Osmonova     | oa14019@auca.kg   | 2009-10-24    | +996502305016
+          2 | Polina     | Frolova      | fp13942@auca.kg   | 2007-03-19    | +996701345647
+          3 | Aziret     | Bekov        | azazaza@gmail.com | 2006-06-24    | 
+          1 | Adinai     | Tsukishima   | aikwzvs@gmail.com | 2006-12-03    | +996504165030
+(6 rows)
+
+postgres=# DELETE FROM university_students
+postgres-# WHERE student_id IN (5, 7, 3, 4);
+DELETE 4
+postgres=# SELECT * FROM university_students;
+ student_id | first_name | last_name  |   email_address   | date_of_birth | phone_number  
+------------+------------+------------+-------------------+---------------+---------------
+          2 | Polina     | Frolova    | fp13942@auca.kg   | 2007-03-19    | +996701345647
+          1 | Adinai     | Tsukishima | aikwzvs@gmail.com | 2006-12-03    | +996504165030
+(2 rows)
