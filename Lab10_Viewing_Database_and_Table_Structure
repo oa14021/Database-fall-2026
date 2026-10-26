@@ -1,0 +1,71 @@
+postgres=# \dt
+                 List of tables
+ Schema |        Name         | Type  |  Owner  
+--------+---------------------+-------+---------
+ public | authors             | table | oa14021
+ public | book_authors        | table | oa14021
+ public | books               | table | oa14021
+ public | customers           | table | oa14021
+ public | loans               | table | oa14021
+ public | members             | table | oa14021
+ public | orders              | table | oa14021
+ public | products            | table | oa14021
+ public | student_courses     | table | oa14021
+ public | transactions        | table | oa14021
+ public | university_students | table | oa14021
+(11 rows)
+
+postgres=# \d university_students
+                                      Table "public.university_students"
+    Column     |          Type          | Collation | Nullable |                   Default                    
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null | 
+ last_name     | character varying(50)  |           | not null | 
+ email_address | character varying(100) |           | not null | 
+ date_of_birth | date                   |           |          | 
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email_address)
+    "unique_student_email" UNIQUE CONSTRAINT, btree (email_address)
+
+postgres=# \d books
+                                           Table "public.books"
+      Column      |          Type          | Collation | Nullable |                Default                 
+------------------+------------------------+-----------+----------+----------------------------------------
+ book_id          | integer                |           | not null | nextval('books_book_id_seq'::regclass)
+ title            | character varying(200) |           | not null | 
+ isbn             | character varying(13)  |           |          | 
+ publication_year | integer                |           |          | 
+ available_copies | integer                |           |          | 1
+Indexes:
+    "books_pkey" PRIMARY KEY, btree (book_id)
+    "books_isbn_key" UNIQUE CONSTRAINT, btree (isbn)
+Referenced by:
+    TABLE "book_authors" CONSTRAINT "book_authors_book_id_fkey" FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE
+    TABLE "loans" CONSTRAINT "loans_book_id_fkey" FOREIGN KEY (book_id) REFERENCES books(book_id)
+
+postgres=# \d authors
+                                         Table "public.authors"
+   Column   |         Type          | Collation | Nullable |                  Default                   
+------------+-----------------------+-----------+----------+--------------------------------------------
+ author_id  | integer               |           | not null | nextval('authors_author_id_seq'::regclass)
+ first_name | character varying(50) |           | not null | 
+ last_name  | character varying(50) |           | not null | 
+ birth_date | date                  |           |          | 
+Indexes:
+    "authors_pkey" PRIMARY KEY, btree (author_id)
+Referenced by:
+    TABLE "book_authors" CONSTRAINT "book_authors_author_id_fkey" FOREIGN KEY (author_id) REFERENCES authors(author_id) ON DELETE CASCADE
+
+postgres=# \d orders
+                                    Table "public.orders"
+    Column     |          Type          | Collation | Nullable |           Default            
+---------------+------------------------+-----------+----------+------------------------------
+ order_id      | integer                |           | not null | generated always as identity
+ customer_name | character varying(100) |           |          | 
+ order_date    | date                   |           |          | CURRENT_DATE
+Indexes:
+    "orders_pkey" PRIMARY KEY, btree (order_id)
+
+postgres=# 
