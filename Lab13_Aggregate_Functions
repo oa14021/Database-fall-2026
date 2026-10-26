@@ -1,0 +1,205 @@
+postgres=# CREATE TABLE departments (
+postgres(# dept_id SERIAL PRIMARY KEY,
+postgres(# dept_name VARCHAR(100) NOT NULL,
+postgres(# budget DECIMAL(12,2),
+postgres(# manager_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO departments (dept_id, dept_name, budget, manager_name) VALUES
+postgres-# (1, 'Engineering', 2000000.00, 'Artur Zhanybekov'),
+postgres-# (2, 'Administrating', 1500000.00, 'Meerim Zhumabekova'),
+postgres-# (3, 'Marketing', 400000.00, 'Alisher Kasymbekov'),
+postgres-# (4, 'Medical Centre', 500000.00, 'Bayaman Niyazbekov'),
+postgres-# (5, 'International Office', 800000.00, 'Ramzan Uranbekov');
+INSERT 0 5
+postgres=# CREATE TABLE employees (
+postgres(# emp_id SERIAL PRIMARY KEY,
+postgres(# name VARCHAR(100) NOT NULL,
+postgres(# position VARCHAR(100),
+postgres(# salary DECIMAL(10,2),
+postgres(# hire_date DATE DEFAULT CURRENT_DATE,
+postgres(# dept_id INTEGER REFERENCES departments(dept_id)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO employees (emp_id, name, position, salary, hire_date, dept_id) VALUES
+postgres-# (1, 'Adinai Osmonova', 'Software Engineer', 102000.00, '2026-06-10', 1),
+postgres-# (2, 'Polina Frolova', 'Manager', 45000.00, '2025-05-15', 3),
+postgres-# (3, 'Aziret Zhumabekov', 'Adviser', 50000.00, '2026-10-15', 2),
+postgres-# (4, 'Lin Turdalieva', 'Doctor', 125000.00, '2026-10-15', 4),
+postgres-# (5, 'Aizirek Osmonova', 'President', 200000.00, '2024-02-24', 2),
+postgres-# (6, 'Arslan Ruslanov', 'Tech Lead', 140000.00, '2025-05-10', 1),
+postgres-# (7, 'Bektur Kushtarbekov', 'Analyst', 85000.00, '2024-12-14', 3);
+INSERT 0 7
+postgres=# SELECT * FROM departments;
+ dept_id |      dept_name       |   budget   |    manager_name    
+---------+----------------------+------------+--------------------
+       1 | Engineering          | 2000000.00 | Artur Zhanybekov
+       2 | Administrating       | 1500000.00 | Meerim Zhumabekova
+       3 | Marketing            |  400000.00 | Alisher Kasymbekov
+       4 | Medical Centre       |  500000.00 | Bayaman Niyazbekov
+       5 | International Office |  800000.00 | Ramzan Uranbekov
+(5 rows)
+
+postgres=# SELECT * FROM employees;
+ emp_id |        name         |     position      |  salary   | hire_date  | dept_id 
+--------+---------------------+-------------------+-----------+------------+---------
+      1 | Adinai Osmonova     | Software Engineer | 102000.00 | 2026-06-10 |       1
+      2 | Polina Frolova      | Manager           |  45000.00 | 2025-05-15 |       3
+      3 | Aziret Zhumabekov   | Adviser           |  50000.00 | 2026-10-15 |       2
+      4 | Lin Turdalieva      | Doctor            | 125000.00 | 2026-10-15 |       4
+      5 | Aizirek Osmonova    | President         | 200000.00 | 2024-02-24 |       2
+      6 | Arslan Ruslanov     | Tech Lead         | 140000.00 | 2025-05-10 |       1
+      7 | Bektur Kushtarbekov | Analyst           |  85000.00 | 2024-12-14 |       3
+(7 rows)
+
+postgres=# SELECT
+postgres-# COUNT(*) AS total_employees,
+postgres-# SUM(salary) AS total_payroll,
+postgres-# ROUND(AVG(salary), 2) AS average_salary,
+postgres-# MAX(salary) AS max_salary,
+postgres-# MIN(salary) AS min_salary
+postgres-# FROM employees;
+ total_employees | total_payroll | average_salary | max_salary | min_salary 
+-----------------+---------------+----------------+------------+------------
+               7 |     747000.00 |      106714.29 |  200000.00 |   45000.00
+(1 row)
+
+postgres=# SELECT
+postgres-# d.dept_name,
+postgres-# COUNT(e.emp_id) AS emp_count,
+postgres-# SUM(e.salary) AS dept_salary_sum,
+postgres-# ROUND(AVG(e.salary), 2) AS dept_avg_salary
+postgres-# FROM departments d
+postgres-# LEFT JOIN employees e ON d.dept_id = e.dept_id
+postgres-# GROUP BY d.dept_id, d.dept_name
+postgres-# ORDER BY dept_salary_sum DESC NULLS LAST;
+      dept_name       | emp_count | dept_salary_sum | dept_avg_salary 
+----------------------+-----------+-----------------+-----------------
+ Administrating       |         2 |       250000.00 |       125000.00
+ Engineering          |         2 |       242000.00 |       121000.00
+ Marketing            |         2 |       130000.00 |        65000.00
+ Medical Centre       |         1 |       125000.00 |       125000.00
+ International Office |         0 |                 |                
+(5 rows)
+
+postgres=# SELECT
+postgres-# d.dept_name,
+postgres-# STRING_AGG(e.name, ', ') AS employees_list
+postgres-# FROM departments d
+postgres-# JOIN employees e ON d.dept_id = e.dept_id
+postgres-# GROUP BY d.dept_name;
+   dept_name    |           employees_list            
+----------------+-------------------------------------
+ Marketing      | Polina Frolova, Bektur Kushtarbekov
+ Engineering    | Adinai Osmonova, Arslan Ruslanov
+ Medical Centre | Lin Turdalieva
+ Administrating | Aziret Zhumabekov, Aizirek Osmonova
+(4 rows)
+
+postgres=# SELECT 
+postgres-# d.dept_name,
+postgres-# SUM(e.salary) AS total_salaries
+postgres-# FROM departments d
+postgres-# JOIN employees e ON d.dept_id = e.dept_id
+postgres-# GROUP BY d.dept_name
+postgres-# HAVING SUM(e.salary) > 100000.00;
+   dept_name    | total_salaries 
+----------------+----------------
+ Marketing      |      130000.00
+ Engineering    |      242000.00
+ Medical Centre |      125000.00
+ Administrating |      250000.00
+(4 rows)
+
+postgres=# SELECT 
+postgres-# d.dept_name,
+postgres-# COUNT(e.emp_id) AS staff_count,
+postgres-# ROUND(AVG(e.salary), 2) AS avg_salary,
+postgres-# ROUND(STDDEV(e.salary), 2) AS salary_stddev,
+postgres-# ROUND(VARIANCE(e.salary), 2) AS salary_variance
+postgres-# FROM departments d
+postgres-# JOIN employees e ON d.dept_id = e.dept_id
+postgres-# GROUP BY d.dept_id, d.dept_name;
+   dept_name    | staff_count | avg_salary | salary_stddev | salary_variance 
+----------------+-------------+------------+---------------+-----------------
+ Marketing      |           2 |   65000.00 |      28284.27 |    800000000.00
+ Medical Centre |           1 |  125000.00 |               |                
+ Administrating |           2 |  125000.00 |     106066.02 |  11250000000.00
+ Engineering    |           2 |  121000.00 |      26870.06 |    722000000.00
+(4 rows)
+
+postgres=# SELECT
+postgres-# CASE
+postgres-# WHEN salary < 60000.00 THEN 'Junior / Entry (< 60K)'
+postgres-# WHEN salary BETWEEN 60000.00 AND 120000.00 THEN 'Mid-level (60K - 120K)'
+postgres-# ELSE 'Senior / Top (> 120K)'
+postgres-# END AS salary_tier,
+postgres-# COUNT(*) AS employees_count,
+postgres-# STRING_AGG(name, ', ') AS employees_in_tier
+postgres-# FROM employees
+postgres-# GROUP BY
+postgres-# CASE
+postgres-# WHEN salary < 60000.00 THEN 'Junior / Entry (< 60K)'
+postgres-# WHEN salary BETWEEN 60000.00 AND 120000.00 THEN 'Mid-level (60K - 120K)'
+postgres-# ELSE 'Senior / Top (> 120K)'
+postgres-# END
+postgres-# ORDER BY employees_count DESC;
+      salary_tier       | employees_count |                 employees_in_tier                 
+------------------------+-----------------+---------------------------------------------------
+ Senior / Top (> 120K)  |               3 | Lin Turdalieva, Aizirek Osmonova, Arslan Ruslanov
+ Junior / Entry (< 60K) |               2 | Polina Frolova, Aziret Zhumabekov
+ Mid-level (60K - 120K) |               2 | Adinai Osmonova, Bektur Kushtarbekov
+(3 rows)
+
+postgres=# SELECT
+postgres-# name,
+postgres-# position,
+postgres-# salary,
+postgres-# dept_id,
+postgres-# ROUND(AVG(salary) OVER (PARTITION BY dept_id), 2) AS dept_avg_salary,
+postgres-# salary - ROUND(AVG(salary) OVER (PARTITION BY dept_id), 2) AS diff_from_dept_avg
+postgres-# FROM employees;
+        name         |     position      |  salary   | dept_id | dept_avg_salary | diff_from_dept_avg 
+---------------------+-------------------+-----------+---------+-----------------+--------------------
+ Adinai Osmonova     | Software Engineer | 102000.00 |       1 |       121000.00 |          -19000.00
+ Arslan Ruslanov     | Tech Lead         | 140000.00 |       1 |       121000.00 |           19000.00
+ Aziret Zhumabekov   | Adviser           |  50000.00 |       2 |       125000.00 |          -75000.00
+ Aizirek Osmonova    | President         | 200000.00 |       2 |       125000.00 |           75000.00
+ Bektur Kushtarbekov | Analyst           |  85000.00 |       3 |        65000.00 |           20000.00
+ Polina Frolova      | Manager           |  45000.00 |       3 |        65000.00 |          -20000.00
+ Lin Turdalieva      | Doctor            | 125000.00 |       4 |       125000.00 |               0.00
+(7 rows)
+
+postgres=# SELECT 
+postgres-# name,
+postgres-# salary,
+postgres-# RANK() OVER (ORDER BY salary DESC) as salary_rank,
+postgres-# DENSE_RANK() OVER (ORDER BY salary DESC) as dense_salary_rank
+postgres-# FROM employees;
+        name         |  salary   | salary_rank | dense_salary_rank 
+---------------------+-----------+-------------+-------------------
+ Aizirek Osmonova    | 200000.00 |           1 |                 1
+ Arslan Ruslanov     | 140000.00 |           2 |                 2
+ Lin Turdalieva      | 125000.00 |           3 |                 3
+ Adinai Osmonova     | 102000.00 |           4 |                 4
+ Bektur Kushtarbekov |  85000.00 |           5 |                 5
+ Aziret Zhumabekov   |  50000.00 |           6 |                 6
+ Polina Frolova      |  45000.00 |           7 |                 7
+(7 rows)
+
+postgres=# SELECT 
+postgres-# d.dept_name,
+postgres-# COUNT(e.emp_id) AS total_employees,
+postgres-# COUNT(CASE WHEN e.salary > 100000.00 THEN 1 END) AS high_earners_count,
+postgres-# SUM(CASE WHEN e.salary <= 100000.00 THEN e.salary ELSE 0 END) AS lower_tier_payroll
+postgres-# FROM departments d
+postgres-# LEFT JOIN employees e ON d.dept_id = e.dept_id
+postgres-# GROUP BY d.dept_id, d.dept_name;
+      dept_name       | total_employees | high_earners_count | lower_tier_payroll 
+----------------------+-----------------+--------------------+--------------------
+ Marketing            |               2 |                  0 |          130000.00
+ International Office |               0 |                  0 |                  0
+ Medical Centre       |               1 |                  1 |                  0
+ Administrating       |               2 |                  1 |           50000.00
+ Engineering          |               2 |                  2 |                  0
+(5 rows)
