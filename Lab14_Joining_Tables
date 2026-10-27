@@ -1,0 +1,154 @@
+postgres=# CREATE TABLE customers (
+postgres(# customer_id SERIAL PRIMARY KEY,
+postgres(# name VARCHAR(100) NOT NULL,
+postgres(# email VARCHAR(100) UNIQUE
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO customers (customer_id, name, email) VALUES
+postgres-# (1, 'Artur Zhanybekov', 'artur@gmail.com'),
+postgres-# (2, 'Kyial Bakytova', 'kyial@gmail.com'),
+postgres-# (3, 'Eldiyar Yrsaliev', 'eldiyar@gmail.com'),
+postgres-# (4, 'Aitunuk Talantbekova', 'aitunuk@gmail.com'),
+postgres-# (5, 'Dilfuza Turdalieva', 'dilfuza@gmail.com'),
+postgres-# (6, 'Bayaman Nurlanov', 'bayaman@gmail.com');
+INSERT 0 6
+postgres=# SELECT * FROM customers;
+ customer_id |         name         |       email       
+-------------+----------------------+-------------------
+           1 | Artur Zhanybekov     | artur@gmail.com
+           2 | Kyial Bakytova       | kyial@gmail.com
+           3 | Eldiyar Yrsaliev     | eldiyar@gmail.com
+           4 | Aitunuk Talantbekova | aitunuk@gmail.com
+           5 | Dilfuza Turdalieva   | dilfuza@gmail.com
+           6 | Bayaman Nurlanov     | bayaman@gmail.com
+(6 rows)
+
+postgres=# CREATE TABLE orders (
+postgres(# order_id SERIAL PRIMARY KEY,
+postgres(# customer_id INTEGER REFERENCES customers(customer_id),
+postgres(# order_date DATE NOT NULL,
+postgres(# total_amount DECIMAL(10,2)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO orders (customer_id, order_date, total_amount) VALUES
+postgres-# (1, '2026-10-19', 1225.50),
+postgres-# (2, '2026-10-19', 29.99),
+postgres-# (1, '2026-10-20', 26.50),
+postgres-# (3, '2026-10-21', 34.99),
+postgres-# (6, '2026-10-14', 38.50);
+INSERT 0 5
+postgres=# CREATE TABLE transactions (
+postgres(# transaction_id SERIAL PRIMARY KEY,
+postgres(# order_id INTEGER REFERENCES orders(order_id),
+postgres(# product_id INTEGER REFERENCES products(product_id),
+postgres(# quantity INTEGER NOT NULL
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO transactions (order_id, product_id, quantity) VALUES
+postgres-# (1, 1, 1), 
+postgres-# (1, 2, 1),
+postgres-# (2, 3, 1),
+postgres-# (3, 2, 1),
+postgres-# (3, 5, 1), 
+postgres-# (4, 7, 1);
+INSERT 0 6
+postgres=# SELECT c.name, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id;
+       name       | order_date | total_amount 
+------------------+------------+--------------
+ Artur Zhanybekov | 2026-10-19 |      1225.50
+ Kyial Bakytova   | 2026-10-19 |        29.99
+ Artur Zhanybekov | 2026-10-20 |        26.50
+ Eldiyar Yrsaliev | 2026-10-21 |        34.99
+ Bayaman Nurlanov | 2026-10-14 |        38.50
+(5 rows)
+
+postgres=# SELECT c.name, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# LEFT JOIN orders o ON c.customer_id = o.customer_id;
+         name         | order_date | total_amount 
+----------------------+------------+--------------
+ Artur Zhanybekov     | 2026-10-19 |      1225.50
+ Kyial Bakytova       | 2026-10-19 |        29.99
+ Artur Zhanybekov     | 2026-10-20 |        26.50
+ Eldiyar Yrsaliev     | 2026-10-21 |        34.99
+ Bayaman Nurlanov     | 2026-10-14 |        38.50
+ Dilfuza Turdalieva   |            |             
+ Aitunuk Talantbekova |            |             
+(7 rows)
+
+postgres=# SELECT c.name, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# RIGHT JOIN orders o ON c.customer_id = o.customer_id;
+       name       | order_date | total_amount 
+------------------+------------+--------------
+ Artur Zhanybekov | 2026-10-19 |      1225.50
+ Kyial Bakytova   | 2026-10-19 |        29.99
+ Artur Zhanybekov | 2026-10-20 |        26.50
+ Eldiyar Yrsaliev | 2026-10-21 |        34.99
+ Bayaman Nurlanov | 2026-10-14 |        38.50
+(5 rows)
+
+postgres=# SELECT c.name, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# FULL OUTER JOIN orders o ON c.customer_id = o.customer_id;
+         name         | order_date | total_amount 
+----------------------+------------+--------------
+ Artur Zhanybekov     | 2026-10-19 |      1225.50
+ Kyial Bakytova       | 2026-10-19 |        29.99
+ Artur Zhanybekov     | 2026-10-20 |        26.50
+ Eldiyar Yrsaliev     | 2026-10-21 |        34.99
+ Bayaman Nurlanov     | 2026-10-14 |        38.50
+ Dilfuza Turdalieva   |            |             
+ Aitunuk Talantbekova |            |             
+(7 rows)
+
+postgres=# SELECT c.name, p.product_name
+postgres-# FROM customers c
+postgres-# CROSS JOIN products p;
+         name         |  product_name  
+----------------------+----------------
+ Artur Zhanybekov     | Laptop
+ Kyial Bakytova       | Laptop
+ Eldiyar Yrsaliev     | Laptop
+ Aitunuk Talantbekova | Laptop
+ Dilfuza Turdalieva   | Laptop
+ Bayaman Nurlanov     | Laptop
+ Artur Zhanybekov     | Mouse
+ Kyial Bakytova       | Mouse
+ Eldiyar Yrsaliev     | Mouse
+ Aitunuk Talantbekova | Mouse
+ Dilfuza Turdalieva   | Mouse
+ Bayaman Nurlanov     | Mouse
+ Artur Zhanybekov     | Headphones
+ Kyial Bakytova       | Headphones
+ Eldiyar Yrsaliev     | Headphones
+ Aitunuk Talantbekova | Headphones
+ Dilfuza Turdalieva   | Headphones
+ Bayaman Nurlanov     | Headphones
+ Artur Zhanybekov     | Leather Wallet
+ Kyial Bakytova       | Leather Wallet
+ Eldiyar Yrsaliev     | Leather Wallet
+ Aitunuk Talantbekova | Leather Wallet
+ Dilfuza Turdalieva   | Leather Wallet
+ Bayaman Nurlanov     | Leather Wallet
+ Artur Zhanybekov     | Notebook
+ Kyial Bakytova       | Notebook
+ Eldiyar Yrsaliev     | Notebook
+ Aitunuk Talantbekova | Notebook
+ Dilfuza Turdalieva   | Notebook
+ Bayaman Nurlanov     | Notebook
+ Artur Zhanybekov     | Sunglasses
+ Kyial Bakytova       | Sunglasses
+ Eldiyar Yrsaliev     | Sunglasses
+ Aitunuk Talantbekova | Sunglasses
+ Dilfuza Turdalieva   | Sunglasses
+ Bayaman Nurlanov     | Sunglasses
+ Artur Zhanybekov     | Backpack
+ Kyial Bakytova       | Backpack
+ Eldiyar Yrsaliev     | Backpack
+ Aitunuk Talantbekova | Backpack
+ Dilfuza Turdalieva   | Backpack
+ Bayaman Nurlanov     | Backpack
+(42 rows)
