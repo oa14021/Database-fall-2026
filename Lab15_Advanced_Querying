@@ -1,0 +1,188 @@
+postgres=#  SELECT product_name, price
+postgres-# FROM products
+postgres-# WHERE price > (SELECT AVG(price) FROM products);
+ product_name |  price  
+--------------+---------
+ Laptop       | 1200.00
+(1 row)
+
+postgres=# SELECT name, email
+postgres-# FROM customers
+postgres-# WHERE customer_id IN (SELECT customer_id FROM orders);
+       name       |       email       
+------------------+-------------------
+ Artur Zhanybekov | artur@gmail.com
+ Kyial Bakytova   | kyial@gmail.com
+ Eldiyar Yrsaliev | eldiyar@gmail.com
+ Bayaman Nurlanov | bayaman@gmail.com
+(4 rows)
+
+postgres=# WITH customer_totals AS (
+postgres(# SELECT customer_id, SUM(total_amount) AS total_spent
+postgres(# FROM orders
+postgres(# GROUP BY customer_id
+postgres(# )
+postgres-# SELECT c.name, ct.total_spent
+postgres-# FROM customers c
+postgres-# JOIN customer_totals ct ON c.customer_id = ct.customer_id
+postgres-# WHERE ct.total_spent > 30.00;
+       name       | total_spent 
+------------------+-------------
+ Artur Zhanybekov |     1252.00
+ Eldiyar Yrsaliev |       34.99
+ Bayaman Nurlanov |       38.50
+(3 rows)
+
+postgres=# WITH RECURSIVE numbers AS (
+postgres(# SELECT 1 AS n
+postgres(# UNION ALL
+postgres(# SELECT n + 1 
+postgres(# FROM numbers 
+postgres(# WHERE n < 5
+postgres(# )
+postgres-# SELECT * FROM numbers;
+ n 
+---
+ 1
+ 2
+ 3
+ 4
+ 5
+(5 rows)
+
+postgres=# SELECT name FROM customers
+postgres-# UNION
+postgres-# SELECT product_name FROM products;
+         name         
+----------------------
+ Sunglesses
+ Mouse
+ Laptop
+ Headphones
+ Artur Zhanybekov
+ Eldiyar Yrsaliev
+ Backpak
+ Leather Wallet
+ Dilfuza Turdalieva
+ Aitunuk Talantbekova
+ Bayaman Nurlanov
+ Notebook
+ Kyial Bakytova
+(13 rows)
+
+postgres=# SELECT product_id FROM transactions
+postgres-# UNION ALL
+postgres-# SELECT product_id FROM products;
+ product_id 
+------------
+          1
+          2
+          3
+          2
+          5
+          7
+          1
+          2
+          3
+          4
+          5
+          6
+          7
+(13 rows)
+
+postgres=# SELECT customer_id FROM customers WHERE customer_id <= 3
+postgres-# INTERSECT
+postgres-# SELECT customer_id FROM orders;
+ customer_id 
+-------------
+           3
+           1
+           2
+(3 rows)
+
+postgres=# SELECT customer_id FROM customers
+postgres-# EXCEPT
+postgres-# SELECT customer_id FROM orders;
+ customer_id 
+-------------
+           5
+           4
+(2 rows)
+
+postgres=# SELECT 
+postgres-# name,
+postgres-# salary,
+postgres-# RANK() OVER (ORDER BY salary DESC) AS salary_rank
+postgres-# FROM employees;
+        name         |  salary   | salary_rank 
+---------------------+-----------+-------------
+ Aizirek Osmonova    | 200000.00 |           1
+ Arslan Ruslanov     | 140000.00 |           2
+ Lin Turdalieva      | 125000.00 |           3
+ Adinai Osmonova     | 102000.00 |           4
+ Bektur Kushtarbekov |  85000.00 |           5
+ Aziret Zhumabekov   |  50000.00 |           6
+ Polina Frolova      |  45000.00 |           7
+(7 rows)
+
+postgres=# SELECT 
+postgres-# name,
+postgres-# dept_id,
+postgres-# salary,
+postgres-# ROUND(AVG(salary) OVER (PARTITION BY dept_id), 2) AS dept_avg_salary
+postgres-# FROM employees;
+        name         | dept_id |  salary   | dept_avg_salary 
+---------------------+---------+-----------+-----------------
+ Adinai Osmonova     |       1 | 102000.00 |       121000.00
+ Arslan Ruslanov     |       1 | 140000.00 |       121000.00
+ Aziret Zhumabekov   |       2 |  50000.00 |       125000.00
+ Aizirek Osmonova    |       2 | 200000.00 |       125000.00
+ Bektur Kushtarbekov |       3 |  85000.00 |        65000.00
+ Polina Frolova      |       3 |  45000.00 |        65000.00
+ Lin Turdalieva      |       4 | 125000.00 |       125000.00
+(7 rows)
+
+postgres=# SELECT 
+postgres-# customer_id,
+postgres-# SUM(CASE WHEN EXTRACT(YEAR FROM order_date) = 2026 THEN total_amount ELSE 0 END) AS total_2026,
+postgres-# SUM(CASE WHEN EXTRACT(YEAR FROM order_date) = 2025 THEN total_amount ELSE 0 END) AS total_2025
+postgres-# FROM orders
+postgres-# GROUP BY customer_id;
+ customer_id | total_2026 | total_2025 
+-------------+------------+------------
+           3 |      34.99 |          0
+           6 |      38.50 |          0
+           2 |      29.99 |          0
+           1 |    1252.00 |          0
+(4 rows)
+
+postgres=# SELECT product_name, price
+postgres-# FROM products
+postgres-# ORDER BY 
+postgres-# CASE 
+postgres-# WHEN price > 1000 THEN 1
+postgres-# WHEN price BETWEEN 30 AND 1000 THEN 2
+postgres-# ELSE 3
+postgres-# END;
+  product_name  |  price  
+----------------+---------
+ Laptop         | 1200.00
+ Backpak        |   34.99
+ Headphones     |   29.99
+ Notebook       |    4.50
+ Sunglesses     |   12.00
+ Leather Wallet |   22.00
+ Mouse          |   25.50
+(7 rows)
+
+postgres=# EXPLAIN ANALYZE 
+postgres-# SELECT * FROM customers WHERE customer_id = 1;
+                                                          QUERY PLAN                                                           
+-------------------------------------------------------------------------------------------------------------------------------
+ Index Scan using customers_pkey on customers  (cost=0.14..8.16 rows=1 width=440) (actual time=0.023..0.024 rows=1.00 loops=1)
+   Index Cond: (customer_id = 1)
+   Index Searches: 1
+   Buffers: shared hit=2
+ Planning Time: 0.114 ms
+ Execution Time: 0.049 ms
+(6 rows)
