@@ -1,0 +1,399 @@
+postgres=# DROP TABLE IF EXISTS employees;
+DROP TABLE
+postgres=# CREATE TABLE employees (
+postgres(# id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# email VARCHAR(100),
+postgres(# department VARCHAR(50),
+postgres(# hire_date DATE
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO employees (first_name, last_name, email, department, hire_date) VALUES
+postgres-# ('Kei', 'Tsukishima', 'tsukishima@gmail.com', 'Blockers', '2022-01-15'),
+postgres-# ('Tobio', 'Kageyama', 'kageyama@gmail.com', 'Setters', '2021-03-20'),
+postgres-# ('Shoyo', 'Hinata', 'hinata@gmail.com', 'Hitters', '2023-05-10'),
+postgres-# ('Koutarou', 'Bokuto', 'bokuto@gmail.com', 'Captains', '2020-11-01'),
+postgres-# ('Tetsuro', 'Kuroo', 'kuroo@gmail.com', 'Blockers', '2021-06-15');
+INSERT 0 5
+postgres=# COPY employees TO '/tmp/employees.csv' WITH CSV HEADER;
+COPY 5
+postgres=# COPY (SELECT * FROM employees WHERE department = 'Blockers') TO '/tmp/blockers.csv' WITH CSV HEADER;
+COPY 2
+postgres=# CREATE TABLE new_employees (LIKE employees INCLUDING ALL);
+CREATE TABLE
+postgres=# COPY new_employees FROM '/tmp/employees.csv' WITH CSV HEADER;
+COPY 5
+postgres=# SELECT * FROM new_employees;
+ id | first_name | last_name  |        email         | department | hire_date  
+----+------------+------------+----------------------+------------+------------
+  1 | Kei        | Tsukishima | tsukishima@gmail.com | Blockers   | 2022-01-15
+  2 | Tobio      | Kageyama   | kageyama@gmail.com   | Setters    | 2021-03-20
+  3 | Shoyo      | Hinata     | hinata@gmail.com     | Hitters    | 2023-05-10
+  4 | Koutarou   | Bokuto     | bokuto@gmail.com     | Captains   | 2020-11-01
+  5 | Tetsuro    | Kuroo      | kuroo@gmail.com      | Blockers   | 2021-06-15
+(5 rows)
+
+postgres=# \q
+sosunok_32@MacBook-Air-Adinai ~ % pg_dump -h localhost -U oa14021 -d postgres -Fc -v > /tmp/postgres_backup.dump
+pg_dump: executing SELECT pg_catalog.set_config('search_path', '', false);
+pg_dump: last built-in OID is 16383
+pg_dump: reading extensions
+pg_dump: identifying extension members
+pg_dump: reading schemas
+pg_dump: reading user-defined tables
+pg_dump: reading user-defined functions
+pg_dump: reading user-defined types
+pg_dump: reading procedural languages
+pg_dump: reading user-defined aggregate functions
+pg_dump: reading user-defined operators
+pg_dump: reading user-defined access methods
+pg_dump: reading user-defined operator classes
+pg_dump: reading user-defined operator families
+pg_dump: reading user-defined text search parsers
+pg_dump: reading user-defined text search templates
+pg_dump: reading user-defined text search dictionaries
+pg_dump: reading user-defined text search configurations
+pg_dump: reading user-defined foreign-data wrappers
+pg_dump: reading user-defined foreign servers
+pg_dump: reading default privileges
+pg_dump: reading user-defined collations
+pg_dump: reading user-defined conversions
+pg_dump: reading type casts
+pg_dump: reading transforms
+pg_dump: reading table inheritance information
+pg_dump: reading event triggers
+pg_dump: finding extension tables
+pg_dump: finding inheritance relationships
+pg_dump: reading column info for interesting tables
+pg_dump: finding table default expressions
+pg_dump: finding table check constraints
+pg_dump: flagging inherited columns in subtables
+pg_dump: reading partitioning data
+pg_dump: reading indexes
+pg_dump: flagging indexes in partitioned tables
+pg_dump: reading extended statistics
+pg_dump: reading constraints
+pg_dump: reading triggers
+pg_dump: reading rewrite rules
+pg_dump: reading policies
+pg_dump: reading row-level security policies
+pg_dump: reading publications
+pg_dump: reading publication membership of tables
+pg_dump: reading publication membership of schemas
+pg_dump: reading subscriptions
+pg_dump: reading subscription membership of tables
+pg_dump: reading large objects
+pg_dump: reading dependency data
+pg_dump: saving encoding = UTF8
+pg_dump: saving "standard_conforming_strings = on"
+pg_dump: saving "search_path = "
+pg_dump: saving database definition
+pg_dump: dumping contents of table "public.accounts"
+pg_dump: dumping contents of table "public.authors"
+pg_dump: dumping contents of table "public.book_authors"
+pg_dump: dumping contents of table "public.books"
+pg_dump: dumping contents of table "public.customers"
+pg_dump: dumping contents of table "public.departments"
+pg_dump: dumping contents of table "public.employees"
+pg_dump: dumping contents of table "public.inventory"
+pg_dump: dumping contents of table "public.loans"
+pg_dump: dumping contents of table "public.logs"
+pg_dump: dumping contents of table "public.members"
+pg_dump: dumping contents of table "public.new_employees"
+pg_dump: dumping contents of table "public.order_items"
+pg_dump: dumping contents of table "public.orders"
+pg_dump: dumping contents of table "public.products"
+pg_dump: dumping contents of table "public.student_courses"
+pg_dump: dumping contents of table "public.transactions"
+pg_dump: dumping contents of table "public.transfer_logs"
+pg_dump: dumping contents of table "public.university_students"
+sosunok_32@MacBook-Air-Adinai ~ % pg_restore --list /tmp/postgres_backup.dump
+;
+; Archive created at 2026-11-02 22:16:36 +06
+;     dbname: postgres
+;     TOC Entries: 132
+;     Compression: gzip
+;     Dump Version: 1.16-0
+;     Format: CUSTOM
+;     Integer: 4 bytes
+;     Offset: 8 bytes
+;     Dumped from database version: 18.6 (Homebrew)
+;     Dumped by pg_dump version: 18.6 (Homebrew)
+;
+;
+; Selected TOC Entries:
+;
+251; 1259 17294 TABLE public accounts oa14021
+250; 1259 17293 SEQUENCE public accounts_account_id_seq oa14021
+4051; 0 0 SEQUENCE OWNED BY public accounts_account_id_seq oa14021
+229; 1259 17049 TABLE public authors oa14021
+228; 1259 17048 SEQUENCE public authors_author_id_seq oa14021
+4052; 0 0 SEQUENCE OWNED BY public authors_author_id_seq oa14021
+232; 1259 17070 TABLE public book_authors oa14021
+231; 1259 17059 TABLE public books oa14021
+230; 1259 17058 SEQUENCE public books_book_id_seq oa14021
+4053; 0 0 SEQUENCE OWNED BY public books_book_id_seq oa14021
+242; 1259 17227 TABLE public customers oa14021
+241; 1259 17226 SEQUENCE public customers_id_seq oa14021
+4054; 0 0 SEQUENCE OWNED BY public customers_id_seq oa14021
+238; 1259 17149 TABLE public departments oa14021
+237; 1259 17148 SEQUENCE public departments_dept_id_seq oa14021
+4055; 0 0 SEQUENCE OWNED BY public departments_dept_id_seq oa14021
+257; 1259 17372 TABLE public employees oa14021
+256; 1259 17371 SEQUENCE public employees_id_seq oa14021
+4056; 0 0 SEQUENCE OWNED BY public employees_id_seq oa14021
+245; 1259 17262 TABLE public inventory oa14021
+236; 1259 17102 TABLE public loans oa14021
+235; 1259 17101 SEQUENCE public loans_loan_id_seq oa14021
+4057; 0 0 SEQUENCE OWNED BY public loans_loan_id_seq oa14021
+249; 1259 17283 TABLE public logs oa14021
+248; 1259 17282 SEQUENCE public logs_id_seq oa14021
+4058; 0 0 SEQUENCE OWNED BY public logs_id_seq oa14021
+234; 1259 17088 TABLE public members oa14021
+233; 1259 17087 SEQUENCE public members_member_id_seq oa14021
+4059; 0 0 SEQUENCE OWNED BY public members_member_id_seq oa14021
+258; 1259 17379 TABLE public new_employees oa14021
+247; 1259 17270 TABLE public order_items oa14021
+246; 1259 17269 SEQUENCE public order_items_id_seq oa14021
+4060; 0 0 SEQUENCE OWNED BY public order_items_id_seq oa14021
+255; 1259 17320 TABLE public orders oa14021
+254; 1259 17319 SEQUENCE public orders_order_id_seq oa14021
+4061; 0 0 SEQUENCE OWNED BY public orders_order_id_seq oa14021
+244; 1259 17252 TABLE public products oa14021
+243; 1259 17251 SEQUENCE public products_id_seq oa14021
+4062; 0 0 SEQUENCE OWNED BY public products_id_seq oa14021
+227; 1259 16606 TABLE public student_courses oa14021
+226; 1259 16500 TABLE public university_students oa14021
+225; 1259 16499 SEQUENCE public students_student_id_seq oa14021
+4063; 0 0 SEQUENCE OWNED BY public students_student_id_seq oa14021
+240; 1259 17199 TABLE public transactions oa14021
+239; 1259 17198 SEQUENCE public transactions_transaction_id_seq oa14021
+4064; 0 0 SEQUENCE OWNED BY public transactions_transaction_id_seq oa14021
+253; 1259 17303 TABLE public transfer_logs oa14021
+252; 1259 17302 SEQUENCE public transfer_logs_log_id_seq oa14021
+4065; 0 0 SEQUENCE OWNED BY public transfer_logs_log_id_seq oa14021
+3802; 2604 17297 DEFAULT public accounts account_id oa14021
+3788; 2604 17052 DEFAULT public authors author_id oa14021
+3789; 2604 17062 DEFAULT public books book_id oa14021
+3798; 2604 17230 DEFAULT public customers id oa14021
+3796; 2604 17152 DEFAULT public departments dept_id oa14021
+3806; 2604 17375 DEFAULT public employees id oa14021
+3793; 2604 17105 DEFAULT public loans loan_id oa14021
+3801; 2604 17286 DEFAULT public logs id oa14021
+3791; 2604 17091 DEFAULT public members member_id oa14021
+3800; 2604 17273 DEFAULT public order_items id oa14021
+3804; 2604 17323 DEFAULT public orders order_id oa14021
+3799; 2604 17255 DEFAULT public products id oa14021
+3797; 2604 17202 DEFAULT public transactions transaction_id oa14021
+3803; 2604 17306 DEFAULT public transfer_logs log_id oa14021
+3787; 2604 16503 DEFAULT public university_students student_id oa14021
+4036; 0 17294 TABLE DATA public accounts oa14021
+4014; 0 17049 TABLE DATA public authors oa14021
+4017; 0 17070 TABLE DATA public book_authors oa14021
+4016; 0 17059 TABLE DATA public books oa14021
+4027; 0 17227 TABLE DATA public customers oa14021
+4023; 0 17149 TABLE DATA public departments oa14021
+4042; 0 17372 TABLE DATA public employees oa14021
+4030; 0 17262 TABLE DATA public inventory oa14021
+4021; 0 17102 TABLE DATA public loans oa14021
+4034; 0 17283 TABLE DATA public logs oa14021
+4019; 0 17088 TABLE DATA public members oa14021
+4043; 0 17379 TABLE DATA public new_employees oa14021
+4032; 0 17270 TABLE DATA public order_items oa14021
+4040; 0 17320 TABLE DATA public orders oa14021
+4029; 0 17252 TABLE DATA public products oa14021
+4012; 0 16606 TABLE DATA public student_courses oa14021
+4025; 0 17199 TABLE DATA public transactions oa14021
+4038; 0 17303 TABLE DATA public transfer_logs oa14021
+4011; 0 16500 TABLE DATA public university_students oa14021
+4066; 0 0 SEQUENCE SET public accounts_account_id_seq oa14021
+4067; 0 0 SEQUENCE SET public authors_author_id_seq oa14021
+4068; 0 0 SEQUENCE SET public books_book_id_seq oa14021
+4069; 0 0 SEQUENCE SET public customers_id_seq oa14021
+4070; 0 0 SEQUENCE SET public departments_dept_id_seq oa14021
+4071; 0 0 SEQUENCE SET public employees_id_seq oa14021
+4072; 0 0 SEQUENCE SET public loans_loan_id_seq oa14021
+4073; 0 0 SEQUENCE SET public logs_id_seq oa14021
+4074; 0 0 SEQUENCE SET public members_member_id_seq oa14021
+4075; 0 0 SEQUENCE SET public order_items_id_seq oa14021
+4076; 0 0 SEQUENCE SET public orders_order_id_seq oa14021
+4077; 0 0 SEQUENCE SET public products_id_seq oa14021
+4078; 0 0 SEQUENCE SET public students_student_id_seq oa14021
+4079; 0 0 SEQUENCE SET public transactions_transaction_id_seq oa14021
+4080; 0 0 SEQUENCE SET public transfer_logs_log_id_seq oa14021
+3849; 2606 17300 CONSTRAINT public accounts accounts_pkey oa14021
+3819; 2606 17057 CONSTRAINT public authors authors_pkey oa14021
+3825; 2606 17076 CONSTRAINT public book_authors book_authors_pkey oa14021
+3821; 2606 17069 CONSTRAINT public books books_isbn_key oa14021
+3823; 2606 17067 CONSTRAINT public books books_pkey oa14021
+3837; 2606 17237 CONSTRAINT public customers customers_email_key oa14021
+3839; 2606 17235 CONSTRAINT public customers customers_pkey oa14021
+3833; 2606 17156 CONSTRAINT public departments departments_pkey oa14021
+3855; 2606 17378 CONSTRAINT public employees employees_pkey oa14021
+3843; 2606 17268 CONSTRAINT public inventory inventory_pkey oa14021
+3831; 2606 17113 CONSTRAINT public loans loans_pkey oa14021
+3847; 2606 17291 CONSTRAINT public logs logs_pkey oa14021
+3827; 2606 17100 CONSTRAINT public members members_email_key oa14021
+3829; 2606 17098 CONSTRAINT public members members_pkey oa14021
+3857; 2606 17385 CONSTRAINT public new_employees new_employees_pkey oa14021
+3845; 2606 17276 CONSTRAINT public order_items order_items_pkey oa14021
+3853; 2606 17327 CONSTRAINT public orders orders_pkey oa14021
+3841; 2606 17261 CONSTRAINT public products products_pkey oa14021
+3817; 2606 16612 CONSTRAINT public student_courses student_courses_pkey oa14021
+3811; 2606 16511 CONSTRAINT public university_students students_email_key oa14021
+3813; 2606 16509 CONSTRAINT public university_students students_pkey oa14021
+3835; 2606 17206 CONSTRAINT public transactions transactions_pkey oa14021
+3851; 2606 17309 CONSTRAINT public transfer_logs transfer_logs_pkey oa14021
+3815; 2606 16516 CONSTRAINT public university_students unique_student_email oa14021
+3858; 2606 17082 FK CONSTRAINT public book_authors book_authors_author_id_fkey oa14021
+3859; 2606 17077 FK CONSTRAINT public book_authors book_authors_book_id_fkey oa14021
+3860; 2606 17119 FK CONSTRAINT public loans loans_book_id_fkey oa14021
+3861; 2606 17114 FK CONSTRAINT public loans loans_member_id_fkey oa14021
+3862; 2606 17328 FK CONSTRAINT public orders orders_customer_id_fkey oa14021
+sosunok_32@MacBook-Air-Adinai ~ % createdb -h localhost -U oa14021 postgres_restored
+sosunok_32@MacBook-Air-Adinai ~ % pg_restore -h localhost -U oa14021 -d postgres_restored -v /tmp/postgres_backup.dump
+pg_restore: connecting to database for restore
+pg_restore: executing SELECT pg_catalog.set_config('search_path', '', false);
+pg_restore: creating TABLE "public.accounts"
+pg_restore: creating SEQUENCE "public.accounts_account_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.accounts_account_id_seq"
+pg_restore: creating TABLE "public.authors"
+pg_restore: creating SEQUENCE "public.authors_author_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.authors_author_id_seq"
+pg_restore: creating TABLE "public.book_authors"
+pg_restore: creating TABLE "public.books"
+pg_restore: creating SEQUENCE "public.books_book_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.books_book_id_seq"
+pg_restore: creating TABLE "public.customers"
+pg_restore: creating SEQUENCE "public.customers_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.customers_id_seq"
+pg_restore: creating TABLE "public.departments"
+pg_restore: creating SEQUENCE "public.departments_dept_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.departments_dept_id_seq"
+pg_restore: creating TABLE "public.employees"
+pg_restore: creating SEQUENCE "public.employees_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.employees_id_seq"
+pg_restore: creating TABLE "public.inventory"
+pg_restore: creating TABLE "public.loans"
+pg_restore: creating SEQUENCE "public.loans_loan_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.loans_loan_id_seq"
+pg_restore: creating TABLE "public.logs"
+pg_restore: creating SEQUENCE "public.logs_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.logs_id_seq"
+pg_restore: creating TABLE "public.members"
+pg_restore: creating SEQUENCE "public.members_member_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.members_member_id_seq"
+pg_restore: creating TABLE "public.new_employees"
+pg_restore: creating TABLE "public.order_items"
+pg_restore: creating SEQUENCE "public.order_items_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.order_items_id_seq"
+pg_restore: creating TABLE "public.orders"
+pg_restore: creating SEQUENCE "public.orders_order_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.orders_order_id_seq"
+pg_restore: creating TABLE "public.products"
+pg_restore: creating SEQUENCE "public.products_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.products_id_seq"
+pg_restore: creating TABLE "public.student_courses"
+pg_restore: creating TABLE "public.university_students"
+pg_restore: creating SEQUENCE "public.students_student_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.students_student_id_seq"
+pg_restore: creating TABLE "public.transactions"
+pg_restore: creating SEQUENCE "public.transactions_transaction_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.transactions_transaction_id_seq"
+pg_restore: creating TABLE "public.transfer_logs"
+pg_restore: creating SEQUENCE "public.transfer_logs_log_id_seq"
+pg_restore: creating SEQUENCE OWNED BY "public.transfer_logs_log_id_seq"
+pg_restore: creating DEFAULT "public.accounts account_id"
+pg_restore: creating DEFAULT "public.authors author_id"
+pg_restore: creating DEFAULT "public.books book_id"
+pg_restore: creating DEFAULT "public.customers id"
+pg_restore: creating DEFAULT "public.departments dept_id"
+pg_restore: creating DEFAULT "public.employees id"
+pg_restore: creating DEFAULT "public.loans loan_id"
+pg_restore: creating DEFAULT "public.logs id"
+pg_restore: creating DEFAULT "public.members member_id"
+pg_restore: creating DEFAULT "public.order_items id"
+pg_restore: creating DEFAULT "public.orders order_id"
+pg_restore: creating DEFAULT "public.products id"
+pg_restore: creating DEFAULT "public.transactions transaction_id"
+pg_restore: creating DEFAULT "public.transfer_logs log_id"
+pg_restore: creating DEFAULT "public.university_students student_id"
+pg_restore: processing data for table "public.accounts"
+pg_restore: processing data for table "public.authors"
+pg_restore: processing data for table "public.book_authors"
+pg_restore: processing data for table "public.books"
+pg_restore: processing data for table "public.customers"
+pg_restore: processing data for table "public.departments"
+pg_restore: processing data for table "public.employees"
+pg_restore: processing data for table "public.inventory"
+pg_restore: processing data for table "public.loans"
+pg_restore: processing data for table "public.logs"
+pg_restore: processing data for table "public.members"
+pg_restore: processing data for table "public.new_employees"
+pg_restore: processing data for table "public.order_items"
+pg_restore: processing data for table "public.orders"
+pg_restore: processing data for table "public.products"
+pg_restore: processing data for table "public.student_courses"
+pg_restore: processing data for table "public.transactions"
+pg_restore: processing data for table "public.transfer_logs"
+pg_restore: processing data for table "public.university_students"
+pg_restore: executing SEQUENCE SET accounts_account_id_seq
+pg_restore: executing SEQUENCE SET authors_author_id_seq
+pg_restore: executing SEQUENCE SET books_book_id_seq
+pg_restore: executing SEQUENCE SET customers_id_seq
+pg_restore: executing SEQUENCE SET departments_dept_id_seq
+pg_restore: executing SEQUENCE SET employees_id_seq
+pg_restore: executing SEQUENCE SET loans_loan_id_seq
+pg_restore: executing SEQUENCE SET logs_id_seq
+pg_restore: executing SEQUENCE SET members_member_id_seq
+pg_restore: executing SEQUENCE SET order_items_id_seq
+pg_restore: executing SEQUENCE SET orders_order_id_seq
+pg_restore: executing SEQUENCE SET products_id_seq
+pg_restore: executing SEQUENCE SET students_student_id_seq
+pg_restore: executing SEQUENCE SET transactions_transaction_id_seq
+pg_restore: executing SEQUENCE SET transfer_logs_log_id_seq
+pg_restore: creating CONSTRAINT "public.accounts accounts_pkey"
+pg_restore: creating CONSTRAINT "public.authors authors_pkey"
+pg_restore: creating CONSTRAINT "public.book_authors book_authors_pkey"
+pg_restore: creating CONSTRAINT "public.books books_isbn_key"
+pg_restore: creating CONSTRAINT "public.books books_pkey"
+pg_restore: creating CONSTRAINT "public.customers customers_email_key"
+pg_restore: creating CONSTRAINT "public.customers customers_pkey"
+pg_restore: creating CONSTRAINT "public.departments departments_pkey"
+pg_restore: creating CONSTRAINT "public.employees employees_pkey"
+pg_restore: creating CONSTRAINT "public.inventory inventory_pkey"
+pg_restore: creating CONSTRAINT "public.loans loans_pkey"
+pg_restore: creating CONSTRAINT "public.logs logs_pkey"
+pg_restore: creating CONSTRAINT "public.members members_email_key"
+pg_restore: creating CONSTRAINT "public.members members_pkey"
+pg_restore: creating CONSTRAINT "public.new_employees new_employees_pkey"
+pg_restore: creating CONSTRAINT "public.order_items order_items_pkey"
+pg_restore: creating CONSTRAINT "public.orders orders_pkey"
+pg_restore: creating CONSTRAINT "public.products products_pkey"
+pg_restore: creating CONSTRAINT "public.student_courses student_courses_pkey"
+pg_restore: creating CONSTRAINT "public.university_students students_email_key"
+pg_restore: creating CONSTRAINT "public.university_students students_pkey"
+pg_restore: creating CONSTRAINT "public.transactions transactions_pkey"
+pg_restore: creating CONSTRAINT "public.transfer_logs transfer_logs_pkey"
+pg_restore: creating CONSTRAINT "public.university_students unique_student_email"
+pg_restore: creating FK CONSTRAINT "public.book_authors book_authors_author_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.book_authors book_authors_book_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.loans loans_book_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.loans loans_member_id_fkey"
+pg_restore: creating FK CONSTRAINT "public.orders orders_customer_id_fkey"
+sosunok_32@MacBook-Air-Adinai ~ % cat << 'EOF' > backup.sh
+#!/bin/bash
+DATE=$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR="/tmp/pg_backups"
+DB_NAME="postgres"
+
+mkdir -p $BACKUP_DIR
+pg_dump -h localhost -U oa14021 -d $DB_NAME -Fc > "$BACKUP_DIR/${DB_NAME}_${DATE}.dump"
+find $BACKUP_DIR -name "${DB_NAME}_*.dump" -mtime +7 -delete
+echo "Backup finished successfully!"
+EOF
+sosunok_32@MacBook-Air-Adinai ~ % chmod +x backup.sh
+./backup.sh
+Backup finished successfully!
+
